@@ -10,8 +10,9 @@ def filter_datum(
         message: str, separator: str
         ) -> str:
     """returns the log message obfuscated"""
-    for field in fields:
-        match = re.search("{}=([^{}]+)".format(field, separator), message)
-        if match:
-            message = re.sub("{}".format(match.group(1)), redaction, message)
-    return message
+    return re.sub(
+        r'({})=[^{}]*'
+        .format('|'.join(map(re.escape, fields)),
+                re.escape(separator)),
+        lambda m: m.group(1) + '=' + redaction, message
+    )
