@@ -5,6 +5,12 @@ from typing import List
 import re
 import os
 import mysql.connector
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.abstracts import MySQLConnectionAbstract
+from mysql.connector.pooling import PooledMySQLConnection
+from typing import Union
+
+
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -61,17 +67,31 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db() -> mysql.connector.connection.MySQLConnection:
-    """Returns a connector to the database"""
+def get_db() -> Union[PooledMySQLConnection, MySQLConnectionAbstract]:
+    """
+    Returns a connector to the database using credentials from environment variables.
+    
+    Environment variables:
+    - PERSONAL_DATA_DB_USERNAME: Database username (default: "root")
+    - PERSONAL_DATA_DB_PASSWORD: Database password (default: "")
+    - PERSONAL_DATA_DB_HOST: Database host (default: "localhost")
+    - PERSONAL_DATA_DB_NAME: Database name (required)
+    
+    Returns:
+        Union[PooledMySQLConnection, MySQLConnectionAbstract]: A connection object to the MySQL database
+    """
+    # Get database credentials from environment variables with defaults
     username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
     password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
     host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
-    db_name = os.getenv('PERSONAL_DATA_DB_NAME', 'my_db')
-
-    connector = mysql.connector.connect(
-        host=host,
+    database = os.getenv('PERSONAL_DATA_DB_NAME')
+    
+    # Create and return the database connection
+    connection = mysql.connector.connect(
         user=username,
         password=password,
-        database=db_name
+        host=host,
+        database=database
     )
-    return connector
+    
+    return connection
