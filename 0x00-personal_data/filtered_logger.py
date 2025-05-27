@@ -91,3 +91,25 @@ def get_db() -> MySQLConnection:
     )
 
     return connection
+
+
+def main():
+    """retrieve all rows in the users table"""
+    # Connect to a database
+    db = get_db()
+    logger = get_logger()
+    # Create a cursor
+    cursor = db.cursor()
+    # Fetch all row from users table
+    cursor.execute("SELECT * FROM users;")
+    fields = cursor.column_names
+    for row in cursor:
+        message = "".join("{}={}; ".format(k, v) for k, v in zip(fields, row))
+        logger.info(message.strip())
+    # Clean up
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
