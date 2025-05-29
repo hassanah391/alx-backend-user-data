@@ -26,8 +26,16 @@ class Auth:
             return True
 
     def authorization_header(self, request=None) -> str:
-        """ do know yet """
-        return None
+        """ Validate all requests to secure the API """
+        if request is None:
+            return None
+        # validate that the request have Authorization key
+        authorization = request.headers.get('Authorization')
+        if authorization is None:
+            return None
+
+        return authorization
+
 
     def current_user(self, request=None) -> TypeVar('User'):
         """do know yet"""
