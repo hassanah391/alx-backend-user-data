@@ -36,7 +36,6 @@ class Auth:
 
         return authorization
 
-
     def current_user(self, request=None) -> TypeVar('User'):
         """do know yet"""
         return None
